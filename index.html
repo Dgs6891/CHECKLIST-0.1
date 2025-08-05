@@ -761,14 +761,13 @@ function copyChecklist() {
   const combustivel = document.getElementById('combustivel').value;
   const quilometragem = document.getElementById('quilometragem').value;
   const cor = document.getElementById('cor').value;
-  const ano = document.getElementById('ano').value.split(' - ')[1] || ano; // Pega apenas o ano (remove o código)
+  const ano = document.getElementById('ano').value.split(' - ')[1] || ano;
 
   // Organizar itens por seção (apenas os selecionados)
   const sections = {};
   document.querySelectorAll('.checklist-item').forEach(item => {
     const emoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '';
     
-    // Só adiciona se tiver um emoji selecionado e não for "➖"
     if (emoji && emoji !== '➖') {
       const section = item.closest('.checklist-section').querySelector('h3').innerText.toUpperCase();
       const label = item.querySelector('label').innerText;
@@ -780,6 +779,14 @@ function copyChecklist() {
       sections[section].push({ label, emoji, observation });
     }
   });
+
+  // Ordenar itens por prioridade dentro de cada seção
+  for (const section in sections) {
+    sections[section].sort((a, b) => {
+      const priority = { '❌': 1, '⚠️': 2, '✅': 3 };
+      return priority[a.emoji] - priority[b.emoji];
+    });
+  }
 
   // Construir mensagem formatada
   let dataText = `*DADOS DO CLIENTE E VEÍCULO*\n`;
@@ -798,7 +805,7 @@ function copyChecklist() {
   
   dataText += `============ CHECKLIST ============\n\n`;
 
-  // Adicionar apenas seções com itens selecionados
+  // Adicionar seções com itens ordenados
   for (const section in sections) {
     if (sections[section].length > 0) {
       dataText += `*${section}*\n`;
@@ -810,7 +817,7 @@ function copyChecklist() {
         }
       });
       
-      dataText += `===================\n\n`;
+      dataText += `*=====================*\n\n`;
     }
   }
 
@@ -819,7 +826,7 @@ function copyChecklist() {
     .catch(() => alert('Erro ao copiar os dados.'));
 }
 
-// Função para enviar WhatsApp (ajustada)
+// Função para enviar WhatsApp (com ordenação por prioridade)
 function sendWhatsApp(type) {
   const clientName = document.getElementById('clientName').value;
   const vehicleModel = document.getElementById('vehicleModel').value;
@@ -830,7 +837,7 @@ function sendWhatsApp(type) {
   const combustivel = document.getElementById('combustivel').value;
   const quilometragem = document.getElementById('quilometragem').value;
   const cor = document.getElementById('cor').value;
-  const ano = document.getElementById('ano').value.split(' - ')[1] || ano; // Pega apenas o ano (remove o código)
+  const ano = document.getElementById('ano').value.split(' - ')[1] || ano;
   const consultor = document.getElementById('consultor').value;
   const mecanico = document.getElementById('mecanico').value;
 
@@ -839,7 +846,6 @@ function sendWhatsApp(type) {
   document.querySelectorAll('.checklist-item').forEach(item => {
     const emoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '';
     
-    // Só adiciona se tiver um emoji selecionado e não for "➖"
     if (emoji && emoji !== '➖') {
       const section = item.closest('.checklist-section').querySelector('h3').innerText.toUpperCase();
       const label = item.querySelector('label').innerText;
@@ -851,6 +857,14 @@ function sendWhatsApp(type) {
       sections[section].push({ label, emoji, observation });
     }
   });
+
+  // Ordenar itens por prioridade dentro de cada seção
+  for (const section in sections) {
+    sections[section].sort((a, b) => {
+      const priority = { '❌': 1, '⚠️': 2, '✅': 3 };
+      return priority[a.emoji] - priority[b.emoji];
+    });
+  }
 
   // Construir mensagem formatada
   let message = `*DADOS DO CLIENTE E VEÍCULO*\n`;
@@ -869,7 +883,7 @@ function sendWhatsApp(type) {
   
   message += `============ *CHECKLIST* ============\n\n`;
 
-  // Adicionar apenas seções com itens selecionados
+  // Adicionar seções com itens ordenados
   for (const section in sections) {
     if (sections[section].length > 0) {
       message += `*${section}*\n`;
@@ -881,7 +895,7 @@ function sendWhatsApp(type) {
         }
       });
       
-      message += `===================\n\n`;
+      message += `*=====================*\n\n`;
     }
   }
 
@@ -909,7 +923,6 @@ function formatDate(dateString) {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
-
 
 
 
@@ -967,6 +980,7 @@ function formatDate(dateString) {
   </script>
 </body>
 </html>
+
 
 
 
