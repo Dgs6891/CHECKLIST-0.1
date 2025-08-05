@@ -745,122 +745,180 @@
     });
 
     // Função para copiar os dados
-    function copyChecklist() {
-      const clientName = document.getElementById('clientName').value;
-      const vehicleModel = document.getElementById('vehicleModel').value;
-      const vehiclePlate = document.getElementById('vehiclePlate').value;
-      const clientPhone = document.getElementById('clientPhone').value;
-      const montadora = document.getElementById('montadora').value;
-      const consultor = document.getElementById('consultor').value;
-      const mecanico = document.getElementById('mecanico').value;
-      const data = document.getElementById('data').value;
-      const combustivel = document.getElementById('combustivel').value;
-      const quilometragem = document.getElementById('quilometragem').value;
-      const cor = document.getElementById('cor').value;
-      const ano = document.getElementById('ano').value;
+    
 
-      const checklistItems = [];
-      document.querySelectorAll('.checklist-item').forEach(item => {
-        const section = item.closest('.checklist-section').querySelector('h3').innerText.toUpperCase();
-        const label = item.querySelector('label').innerText;
-        const emoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '➖';
-        const observation = document.getElementById(`observation-${item.querySelector('.emoji-rating').getAttribute('data-item')}`)?.querySelector('textarea').value || '';
-        
-        if (emoji !== '➖') {
-          checklistItems.push({ section, label, emoji, observation });
+    
+    // Função para copiar os dados (ajustada)
+function copyChecklist() {
+  const clientName = document.getElementById('clientName').value;
+  const vehicleModel = document.getElementById('vehicleModel').value;
+  const vehiclePlate = document.getElementById('vehiclePlate').value;
+  const clientPhone = document.getElementById('clientPhone').value;
+  const montadora = document.getElementById('montadora').value;
+  const consultor = document.getElementById('consultor').value;
+  const mecanico = document.getElementById('mecanico').value;
+  const data = formatDate(document.getElementById('data').value);
+  const combustivel = document.getElementById('combustivel').value;
+  const quilometragem = document.getElementById('quilometragem').value;
+  const cor = document.getElementById('cor').value;
+  const ano = document.getElementById('ano').value.split(' - ')[1] || ano; // Pega apenas o ano (remove o código)
+
+  // Organizar itens por seção (apenas os selecionados)
+  const sections = {};
+  document.querySelectorAll('.checklist-item').forEach(item => {
+    const emoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '';
+    
+    // Só adiciona se tiver um emoji selecionado e não for "➖"
+    if (emoji && emoji !== '➖') {
+      const section = item.closest('.checklist-section').querySelector('h3').innerText.toUpperCase();
+      const label = item.querySelector('label').innerText;
+      const observation = document.getElementById(`observation-${item.querySelector('.emoji-rating').getAttribute('data-item')}`)?.querySelector('textarea').value || '';
+      
+      if (!sections[section]) {
+        sections[section] = [];
+      }
+      sections[section].push({ label, emoji, observation });
+    }
+  });
+
+  // Construir mensagem formatada
+  let dataText = `*DADOS DO CLIENTE E VEÍCULO*\n`;
+  dataText += `*CLIENTE:* ${clientName}\n`;
+  dataText += `*TELEFONE:* ${clientPhone}\n`;
+  dataText += `*MONTADORA:* ${montadora}\n`;
+  dataText += `*MODELO:* ${vehicleModel}\n`;
+  dataText += `*PLACA:* ${vehiclePlate}\n`;
+  dataText += `*ANO:* ${ano}\n`;
+  dataText += `*COR:* ${cor}\n`;
+  dataText += `*DATA:* ${data}\n`;
+  dataText += `*COMBUSTÍVEL:* ${combustivel}\n`;
+  dataText += `*QUILOMETRAGEM:* ${quilometragem}\n`;
+  dataText += `*CONSULTOR:* ${consultor}\n`;
+  dataText += `*MECÂNICO:* ${mecanico}\n\n`;
+  
+  dataText += `============ CHECKLIST ============\n\n`;
+
+  // Adicionar apenas seções com itens selecionados
+  for (const section in sections) {
+    if (sections[section].length > 0) {
+      dataText += `*${section}*\n`;
+      
+      sections[section].forEach(item => {
+        dataText += `${item.label}: ${item.emoji}\n`;
+        if (item.observation) {
+          dataText += `OBS: ${item.observation}\n`;
         }
       });
-
-      const sortedItems = checklistItems.sort((a, b) => {
-        const order = { '❌': 1, '⚠️': 2, '✅': 3 };
-        return order[a.emoji] - order[b.emoji];
-      });
-
-      const dataText = `
-CLIENTE      : ${clientName}
-TELEFONE     : ${clientPhone}
-MONTADORA    : ${montadora}
-VEÍCULO      : ${vehicleModel}
-PLACA        : ${vehiclePlate}
-DATA         : ${data}
-COR          : ${cor}
-ANO          : ${ano}
-COMBUSTÍVEL  : ${combustivel}
-QUILOMETRAGEM: ${quilometragem}
-CONSULTOR    : ${consultor}
-MECÂNICO     : ${mecanico}
-
-        CHECKLIST:
-        ${sortedItems.map(item => `
-          SEÇÃO: ${item.section}
-          ${item.label}: ${item.emoji}
-          ${item.observation ? `OBSERVAÇÃO: ${item.observation}` : ''}
-        `).join('')}
-      `;
-
-      navigator.clipboard.writeText(dataText.trim())
-        .then(() => alert('Dados copiados para a área de transferência!'))
-        .catch(() => alert('Erro ao copiar os dados.'));
+      
+      dataText += `===================\n\n`;
     }
+  }
 
-    function sendWhatsApp(type) {
-      const clientName = document.getElementById('clientName').value;
-      const vehicleModel = document.getElementById('vehicleModel').value;
-      const vehiclePlate = document.getElementById('vehiclePlate').value;
-      const clientPhone = document.getElementById('clientPhone').value.replace(/\D/g, '');
-      const montadora = document.getElementById('montadora').value;
-      const data = document.getElementById('data').value;
-      const combustivel = document.getElementById('combustivel').value;
-      const quilometragem = document.getElementById('quilometragem').value;
-      const cor = document.getElementById('cor').value;
-      const ano = document.getElementById('ano').value;
-      const consultor = document.getElementById('consultor').value;
-      const mecanico = document.getElementById('mecanico').value;
+  navigator.clipboard.writeText(dataText.trim())
+    .then(() => alert('Checklist copiado para a área de transferência!'))
+    .catch(() => alert('Erro ao copiar os dados.'));
+}
 
-      const checklistItems = [];
-      document.querySelectorAll('.checklist-item').forEach(item => {
-        const section = item.closest('.checklist-section').querySelector('h3').innerText.toUpperCase();
-        const label = item.querySelector('label').innerText;
-        const emoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '➖';
-        const observation = document.getElementById(`observation-${item.querySelector('.emoji-rating').getAttribute('data-item')}`)?.querySelector('textarea').value || '';
-        
-        if (emoji !== '➖') {
-          checklistItems.push({ section, label, emoji, observation });
+// Função para enviar WhatsApp (ajustada)
+function sendWhatsApp(type) {
+  const clientName = document.getElementById('clientName').value;
+  const vehicleModel = document.getElementById('vehicleModel').value;
+  const vehiclePlate = document.getElementById('vehiclePlate').value;
+  const clientPhone = document.getElementById('clientPhone').value.replace(/\D/g, '');
+  const montadora = document.getElementById('montadora').value;
+  const data = formatDate(document.getElementById('data').value);
+  const combustivel = document.getElementById('combustivel').value;
+  const quilometragem = document.getElementById('quilometragem').value;
+  const cor = document.getElementById('cor').value;
+  const ano = document.getElementById('ano').value.split(' - ')[1] || ano; // Pega apenas o ano (remove o código)
+  const consultor = document.getElementById('consultor').value;
+  const mecanico = document.getElementById('mecanico').value;
+
+  // Organizar itens por seção (apenas os selecionados)
+  const sections = {};
+  document.querySelectorAll('.checklist-item').forEach(item => {
+    const emoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '';
+    
+    // Só adiciona se tiver um emoji selecionado e não for "➖"
+    if (emoji && emoji !== '➖') {
+      const section = item.closest('.checklist-section').querySelector('h3').innerText.toUpperCase();
+      const label = item.querySelector('label').innerText;
+      const observation = document.getElementById(`observation-${item.querySelector('.emoji-rating').getAttribute('data-item')}`)?.querySelector('textarea').value || '';
+      
+      if (!sections[section]) {
+        sections[section] = [];
+      }
+      sections[section].push({ label, emoji, observation });
+    }
+  });
+
+  // Construir mensagem formatada
+  let message = `*DADOS DO CLIENTE E VEÍCULO*\n`;
+  message += `*CLIENTE:* ${clientName}\n`;
+  message += `*TELEFONE:* ${clientPhone}\n`;
+  message += `*MONTADORA:* ${montadora}\n`;
+  message += `*MODELO:* ${vehicleModel}\n`;
+  message += `*PLACA:* ${vehiclePlate}\n`;
+  message += `*ANO:* ${ano}\n`;
+  message += `*COR:* ${cor}\n`;
+  message += `*DATA:* ${data}\n`;
+  message += `*COMBUSTÍVEL:* ${combustivel}\n`;
+  message += `*QUILOMETRAGEM:* ${quilometragem}\n`;
+  message += `*CONSULTOR:* ${consultor}\n`;
+  message += `*MECÂNICO:* ${mecanico}\n\n`;
+  
+  message += `============ *CHECKLIST* ============\n\n`;
+
+  // Adicionar apenas seções com itens selecionados
+  for (const section in sections) {
+    if (sections[section].length > 0) {
+      message += `*${section}*\n`;
+      
+      sections[section].forEach(item => {
+        message += `${item.label}: ${item.emoji}\n`;
+        if (item.observation) {
+          message += `OBS: ${item.observation}\n`;
         }
       });
-
-      const sortedItems = checklistItems.sort((a, b) => {
-        const order = { '❌': 1, '⚠️': 2, '✅': 3 };
-        return order[a.emoji] - order[b.emoji];
-      });
-
-      const message = `
-        *NOME DO CLIENTE:* ${clientName}
-        *TELEFONE:* ${clientPhone}
-        *MONTADORA:* ${montadora}
-        *MODELO DO VEÍCULO:* ${vehicleModel}
-        *PLACA DO VEÍCULO:* ${vehiclePlate}
-        *DATA:* ${data}
-        *COMBUSTÍVEL:* ${combustivel}
-        *QUILOMETRAGEM:* ${quilometragem}
-        *COR:* ${cor}
-        *ANO:* ${ano}
-        *CONSULTOR:* ${consultor}
-        *MECÂNICO:* ${mecanico}
-
-        *CHECKLIST:*
-        ${sortedItems.map(item => `
-          *SEÇÃO:* ${item.section}
-          ${item.label}: ${item.emoji}
-          ${item.observation ? `*OBSERVAÇÃO:* ${item.observation}` : ''}
-        `).join('')}
-      `.trim();
-
-      const url = type === 'business' 
-        ? `https://wa.me/55${clientPhone}?text=${encodeURIComponent(message)}&app_absent=1`
-        : `https://wa.me/55${clientPhone}?text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank');
+      
+      message += `===================\n\n`;
     }
+  }
+
+  // Versão mais detalhada para WhatsApp Business
+  if (type === 'business') {
+    message += `*INFORMAÇÕES ADICIONAIS*\n`;
+    message += `Data e hora: ${new Date().toLocaleString()}\n`;
+    message += `Checklist completo realizado\n`;
+    message += `Próximos passos: Agendar serviços necessários`;
+  }
+
+  const url = type === 'business' 
+    ? `https://wa.me/55${clientPhone}?text=${encodeURIComponent(message)}&app_absent=1`
+    : `https://wa.me/55${clientPhone}?text=${encodeURIComponent(message)}`;
+  
+  window.open(url, '_blank');
+}
+
+// Função auxiliar para formatar data (DD/MM/AAAA)
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+
+
+
+
+
+
+
+
+
 
     // Função para exibir o pop-up
     function showPopup(title, description, imageUrl) {
@@ -909,3 +967,6 @@ MECÂNICO     : ${mecanico}
   </script>
 </body>
 </html>
+
+
+
