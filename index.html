@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklist Automotivo</title>
+  <style>
+    /* Estilos gerais */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-size: 22px;
+    }
+
+    input[type="text"], textarea {
+      width: 96%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 18px;
+    }
+
+    input[type="tel"], textarea {
+      width: 96%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 18px;
+    }
+
+    .checklist-section {
+      margin-bottom: 20px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      transition: all 0.3s ease;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .checklist-item.selected {
+      background-color: #e0f7fa;
+    }
+
+    .checklist-item.highlighted {
+      background-color: #e0f7fa;
+      transform: scale(1.02);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin: 15px 0;
+    }
+
+    .checklist-item.highlighted label {
+      flex: 0 0 100%;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .checklist-item.highlighted .emoji-rating {
+      flex: 1;
+      order: 2;
+      margin-top: 10px;
+    }
+
+    .checklist-item.highlighted .info-icon {
+      order: 0;
+      margin-left: 10;
+      margin-right: 15px;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    .checklist-item label {
+      flex: 1;
+    }
+
+    .emoji-rating {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      transition: all 0.3s ease;
+      padding: 5px 0;
+    }
+
+    .emoji-rating.collapsed {
+      justify-content: flex-end;
+    }
+
+    .emoji-rating span {
+      cursor: pointer;
+      font-size: 24px;
+      transition: all 0.3s ease;
+      flex: 0 0 auto;
+    }
+
+    .emoji-rating span:not(.selected) {
+      opacity: 0.3;
+    }
+
+    .emoji-rating span.selected {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    .emoji-rating.collapsed span:not(.selected) {
+      display: none;
+    }
+
+    .emoji-rating.collapsed span.selected {
+      opacity: 1;
+      transform: scale(1.2);
+      margin-left: auto;
+    }
+
+    button {
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    button.whatsapp {
+      background-color: #25d366;
+    }
+    
+    button.clear {
+      background-color: #dc3545;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .observation {
+      display: none;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 18px;
+    }
+
+    #data {
+      width: 96%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 18px;
+    }
+
+    #clientForm {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .info-icon {
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 22px;
+      color: #007bff;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      max-width: 90%;
+      width: 400px;
+    }
+
+    .popup img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    .popup p {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    /* Estilos para o campo de filtro */
+    .search-container {
+      position: relative;
+      margin: 20px 0;
+    }
+
+   .search-container i {
+      position: absolute;
+      right: 6px;
+      top: 40%;
+      transform: translateY(-50%);
+      color: #777;
+      font-size: 22px;
+    }
+
+    #filterInput {
+      width: 88%;
+      padding: 10px 40px 10px 15px;
+      font-size: 22px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    /* Estilo para itens filtrados */
+    .checklist-item.hidden {
+      display: none;
+    }
+
+    .section-hidden {
+      display: none;
+    }
+
+    .section-visible {
+      display: block;
+    }
+
+    /* Efeito de foco suave */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    .pulse {
+      animation: pulse 0.5s ease;
+    }
+
+    @keyframes slideRight {
+      from { transform: translateX(0); }
+      to { transform: translateX(50px); }
+    }
+
+    .slide-right {
+      animation: slideRight 0.3s forwards;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Checklist Automotivo</h1>
+
+    <!-- Formulário de Dados do Cliente e Veículo -->
+    <form id="clientForm">
+      <label for="clientName">Nome do Cliente:</label>
+      <input type="text" id="clientName" placeholder="Digite o nome do cliente" required>
+
+      <label for="clientPhone">Telefone do Cliente:</label>
+      <input type="tel" id="clientPhone" placeholder="(XX) X XXXX-XXXX" required>
+
+      <label for="montadora">Montadora do Veículo:</label>
+      <input type="text" id="montadora" placeholder="Digite a montada do veículo" required>
+
+      <label for="vehicleModel">Modelo do Veículo:</label>
+      <input type="text" id="vehicleModel" placeholder="Digite o modelo do veículo" required>
+
+      <label for="ano">Ano do Veículo:</label>
+      <select id="ano" required>
+        <option value="Selecionar o Ano">Selecionar o Ano</option>
+        <option value="1 - 1971">1 - 1971</option>
+        <option value="2 - 1972">2 - 1972</option>
+        <option value="3 - 1973">3 - 1973</option>
+        <option value="4 - 1974">4 - 1974</option>
+        <option value="5 - 1975">5 - 1975</option>
+        <option value="6 - 1976">6 - 1976</option>
+        <option value="7 - 1977">7 - 1977</option>
+        <option value="8 - 1978">8 - 1978</option>
+        <option value="9 - 1979">9 - 1979</option>
+        <option value="A - 1980">A - 1980</option>
+        <option value="B - 1981">B - 1981</option>
+        <option value="C - 1982">C - 1982</option>
+        <option value="D - 1983">D - 1983</option>
+        <option value="E - 1984">E - 1984</option>
+        <option value="F - 1985">F - 1985</option>
+        <option value="G - 1986">G - 1986</option>
+        <option value="H - 1987">H - 1987</option>
+        <option value="J - 1988">J - 1988</option>
+        <option value="K - 1989">K - 1989</option>
+        <option value="L - 1990">L - 1990</option>
+        <option value="M - 1991">M - 1991</option>
+        <option value="N - 1992">N - 1992</option>
+        <option value="P - 1993">P - 1993</option>
+        <option value="R - 1994">R - 1994</option>
+        <option value="S - 1995">S - 1995</option>
+        <option value="T - 1996">T - 1996</option>
+        <option value="V - 1997">V - 1997</option>
+        <option value="W - 1998">W - 1998</option>
+        <option value="X - 1999">X - 1999</option>
+        <option value="Y - 2000">Y - 2000</option>
+        <option value="1 - 2001">1 - 2001</option>
+        <option value="2 - 2002">2 - 2002</option>
+        <option value="3 - 2003">3 - 2003</option>
+        <option value="4 - 2004">4 - 2004</option>
+        <option value="5 - 2005">5 - 2005</option>
+        <option value="6 - 2006">6 - 2006</option>
+        <option value="7 - 2007">7 - 2007</option>
+        <option value="8 - 2008">8 - 2008</option>
+        <option value="9 - 2009">9 - 2009</option>
+        <option value="A - 2010">A - 2010</option>
+        <option value="B - 2011">B - 2011</option>
+        <option value="C - 2012">C - 2012</option>
+        <option value="D - 2013">D - 2013</option>
+        <option value="E - 2014">E - 2014</option>
+        <option value="F - 2015">F - 2015</option>
+        <option value="G - 2016">G - 2016</option>
+        <option value="H - 2017">H - 2017</option>
+        <option value="J - 2018">J - 2018</option>
+        <option value="K - 2019">K - 2019</option>
+        <option value="L - 2020">L - 2020</option>
+        <option value="M - 2021">M - 2021</option>
+        <option value="N - 2022">N - 2022</option>
+        <option value="P - 2023">P - 2023</option>
+        <option value="R - 2024">R - 2024</option>
+        <option value="S - 2025">S - 2025</option>
+        <option value="T - 2026">T - 2026</option>
+        <option value="V - 2027">V - 2027</option>
+        <option value="W - 2028">W - 2028</option>
+        <option value="X - 2029">X - 2029</option>
+        <option value="Y - 2030">Y - 2030</option>
+        <option value="Outro">Outro</option>
+      </select>
+
+      <label for="cor">Cor do Veículo:</label>
+      <select id="cor" required>
+        <option value="Selecionar a Cor">Selecionar a Cor</option>
+        <option value="Amarelo">Amarelo</option>
+        <option value="Azul">Azul</option>
+        <option value="Bege">Bege</option>
+        <option value="Branco">Branco</option>
+        <option value="Bronze">Bronze</option>
+        <option value="Caramelo">Caramelo</option>
+        <option value="Cinza">Cinza</option>
+        <option value="Cobre">Cobre</option>
+        <option value="Dourado">Dourado</option>
+        <option value="Grafite">Grafite</option>
+        <option value="Laranja">Laranja</option>
+        <option value="Marrom">Marrom</option>
+        <option value="Prata">Prata</option>
+        <option value="Preto">Preto</option>
+        <option value="Rosa">Rosa</option>
+        <option value="Roxo">Roxo</option>
+        <option value="Verde">Verde</option>
+        <option value="Vermelho">Vermelho</option>
+        <option value="Vinho">Vinho</option>
+        <option value="Outra">Outra</option>
+      </select>
+
+      <label for="vehiclePlate">Placa do Veículo:</label>
+      <input type="text" id="vehiclePlate" placeholder="AAA-0000 ou AAA0A00" maxlength="8" required>
+
+      <label for="consultor">Consultor do Veículo:</label>
+      <input type="text" id="consultor" placeholder="Digite o consultor do veículo" required>
+
+      <label for="mecanico">Mecânico do Veículo:</label>
+      <input type="text" id="mecanico" placeholder="Digite o mecânico do veículo" required>
+
+      <label for="data">Data:</label>
+      <input type="date" id="data" required>
+      
+      <!-- Input de Combustível com escala detalhada e porcentagem no valor (em frações) -->
+      <label for="combustivel">Nível de Combustível:</label>
+      <select id="combustivel" name="combustivel" required>
+        <option value="Quantidade de Combustível">Quantidade de Combustível</option>
+        <option value="Vazio 0 (0%)......🟥←">Vazio 0 (0%)......🟥←</option>
+        <option value="1/8 (12,5%)">1/8 (12,5%)</option>
+        <option value="1/4 (25%)">1/4 (25%)</option>
+        <option value="3/8 (37,5%)">3/8 (37,5%)</option>
+        <option value="Meio 1/2 (50%)..🟨←">Meio 1/2 (50%)..🟨←</option>
+        <option value="5/8 (62,5%)">5/8 (62,5%)</option>
+        <option value="3/4 (75%)">3/4 (75%)</option>
+        <option value="7/8 (87,5%)">7/8 (87,5%)</option>
+        <option value="Cheio 1 (100%)..🟩←">Cheio 1 (100%)..🟩←</option>
+      </select>
+      <br><br>
+
+      <!-- Input de Quilometragem -->
+      <label for="quilometragem">Quilometragem (hodômetro):</label>
+      <input type="tel" id="quilometragem" min="0" max="999999" maxlength="6" oninput="this.value = this.value.slice(0, 6)" placeholder="Digite a Quilometragem" required>
+    </form>
+
+    <!-- Checklist -->
+    
+
+    <!-- Campo de filtro -->
+    <div class="search-container">
+      <input type="text" id="filterInput" placeholder="Filtrar itens...">
+      <i class="fas fa-search"></i>
+    </div>
+
+    <h2>CHECKLIST</h2> <!-- Seção de INSPEÇÃO EXTERNA LATARIA E PINTURA. --> <div class="checklist-section"> <h3>INSPEÇÃO EXTERNA LATARIA E PINTURA.</h3> <div class="checklist-item"> <label for="item1">Amassados ou Arranhões no capô (Frente).</label> <div class="emoji-rating" data-item="item1"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="active">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões no capô (Frente).', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item1"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item2">Amassados ou Arranhões no Teto.</label> <div class="emoji-rating" data-item="item2"> <span data-value="✅" class="active">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões no Teto.', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item2"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item3">Amassados ou Arranhões na porta dianteira Motorista (L/E)</label> <div class="emoji-rating" data-item="item3"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões na porta dianteira Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item3"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item4">Amassados ou Arranhões na porta dianteira Passageiro (L/D)</label> <div class="emoji-rating" data-item="item4"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="active">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões na porta dianteira Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item4"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item5">Amassados ou Arranhões na porta traseira Motorista (L/E)</label> <div class="emoji-rating" data-item="item5"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões na porta traseira Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item5"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item6">Amassados ou Arranhões na porta traseira Passageiro (L/D)</label> <div class="emoji-rating" data-item="item6"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões na porta traseira Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item6"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item7">Amassados ou Arranhões no parachoque dianteiro (Frente)</label> <div class="emoji-rating" data-item="item7"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões no parachoque dianteiro (Frente)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item7"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item8">Amassados ou Arranhões no parachoque traseiro (Traseira)</label> <div class="emoji-rating" data-item="item8"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões no parachoque traseiro (Traseira)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item8"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item9">Riscos profundos na lateral Motorista (L/E)</label> <div class="emoji-rating" data-item="item9"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Riscos profundos na lateral Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item9"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item10">Riscos profundos na lateral Passageiro (L/D)</label> <div class="emoji-rating" data-item="item10"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Riscos profundos na lateral Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item10"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item11">Diferença de tonalidade da pintura</label> <div class="emoji-rating" data-item="item11"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Diferença de tonalidade da pintura', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item11"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item12">Ferrugem nas colunas (A, B, C)</label> <div class="emoji-rating" data-item="item12"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Ferrugem nas colunas (A, B, C)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item12"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item13">Estado dos frisos e molduras</label> <div class="emoji-rating" data-item="item13"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Estado dos frisos e molduras', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item13"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item14">Condição dos emblemas e logotipos</label> <div class="emoji-rating" data-item="item14"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Condição dos emblemas e logotipos', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item14"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item15">Amassados ou Arranhões na Mala ou Tampa da Caçamba (Traseira)</label> <div class="emoji-rating" data-item="item15"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amassados ou Arranhões na Mala ou Tampa da Caçamba (Traseira)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item15"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item16">Bagageiro</label> <div class="emoji-rating" data-item="item16"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Bagageiro', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item16"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item17">Antena</label> <div class="emoji-rating" data-item="item17"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Antena', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item17"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item18">Estribos L/D Passageiro</label> <div class="emoji-rating" data-item="item18"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Estribos L/D Passageiro', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item18"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item19">Estribos L/E Motorista</label> <div class="emoji-rating" data-item="item19"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Estribos L/E Motorista', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item19"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item20">Engate Reboque Traseira</label> <div class="emoji-rating" data-item="item20"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Engate Reboque Traseira', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item20"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de VIDROS E JANELAS --> <div class="checklist-section"> <h3>VIDROS E JANELAS</h3> <div class="checklist-item"> <label for="item21">Trincas no para-brisa (Frente)</label> <div class="emoji-rating" data-item="item21"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Trincas no para-brisa (Frente)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item21"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item22">Trincas no vidro traseiro (Traseira)</label> <div class="emoji-rating" data-item="item22"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="active">➖</span> </div> <span class="info-icon" onclick="showPopup('Trincas no vidro traseiro (Traseira)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item22"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item23">Vidro lateral Motorista (L/E) - riscos e funcionamento</label> <div class="emoji-rating" data-item="item23"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vidro lateral Motorista (L/E) - riscos e funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item23"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item24">Vidro lateral Passageiro (L/D) - riscos e funcionamento</label> <div class="emoji-rating" data-item="item24"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vidro lateral Passageiro (L/D) - riscos e funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item24"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item25">Vidro lateral Traseiro Passageiro (L/D) - riscos e funcionamento</label> <div class="emoji-rating" data-item="item25"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vidro lateral Traseiro Passageiro (L/D) - riscos e funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item25"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item26">Vidro lateral Traseiro Passageiro (L/E) - riscos e funcionamento</label> <div class="emoji-rating" data-item="item26"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vidro lateral Traseiro Passageiro (L/E) - riscos e funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item26"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item27">Teto Solar Riscos e Funcionamento</label> <div class="emoji-rating" data-item="item27"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Teto Solar Riscos e Funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item27"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item28">Película aplicada (bolhas, descolamento)</label> <div class="emoji-rating" data-item="item28"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Película aplicada (bolhas, descolamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item28"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item29">Borrachas de vedação (estado, vedação)</label> <div class="emoji-rating" data-item="item29"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Borrachas de vedação (estado, vedação)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item29"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item30">Funcionamento do desembaçador traseiro</label> <div class="emoji-rating" data-item="item30"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Funcionamento do desembaçador traseiro', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item30"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de ILUMINAÇÃO EXTERNA --> <div class="checklist-section"> <h3>ILUMINAÇÃO EXTERNA</h3> <div class="checklist-item"> <label for="item31">Farol Alto Lado Motorista (L/E) - lente e funcionamento</label> <div class="emoji-rating" data-item="item31"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Farol Alto Lado Motorista (L/E) - lente e funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item31"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item32">Farol Alto Lado Passageiro (L/D) - lente e funcionamento</label> <div class="emoji-rating" data-item="item32"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Farol Alto Lado Passageiro (L/D) - lente e funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item32"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item33">Farol Baixo Lado Motorista (L/E) - lente e funcionamento</label> <div class="emoji-rating" data-item="item33"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Farol Baixo Lado Motorista (L/E) - lente e funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item33"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item34">Farol Baixo Lado Passageiro (L/D) - lente e funcionamento</label> <div class="emoji-rating" data-item="item34"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Farol Baixo Lado Passageiro (L/D) - lente e funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item34"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item35">Farol de neblina Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item35"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Farol de neblina Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item35"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item36">Farol de neblina Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item36"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Farol de neblina Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item36"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item37">Lanterna traseira Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item37"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Lanterna traseira Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item37"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item38">Lanterna traseira Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item38"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Lanterna traseira Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item38"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item39">Terceira luz de freio Black Light (Traseira)</label> <div class="emoji-rating" data-item="item39"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Terceira luz de freio Black Light (Traseira)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item39"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item40">Luz de Freio traseira Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item40"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de Freio traseira Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item40"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item41">Luz de Freio traseira Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item41"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de Freio traseira Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item41"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item42">Luz de RÉ traseira Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item42"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de RÉ traseira Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item42"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item43">Luz de RÉ traseira Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item43"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de RÉ traseira Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item43"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item44">Luz de placa (Traseira) Lado do Motorista (L/E)</label> <div class="emoji-rating" data-item="item44"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de placa (Traseira) Lado do Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item44"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item45">Luz de placa (Traseira) Lado do Passageiro (L/D)</label> <div class="emoji-rating" data-item="item45"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de placa (Traseira) Lado do Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item45"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item46">Seta dianteira Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item46"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Seta dianteira Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item46"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item47">Seta dianteira Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item47"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Seta dianteira Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item47"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item48">Seta Lateral Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item48"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Seta Lateral Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item48"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item49">Seta Lateral Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item49"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Seta Lateral Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item49"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item50">Seta Retrovisor Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item50"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Seta Retrovisor Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item50"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item51">Seta Retrovisor Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item51"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Seta Retrovisor Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item51"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item52">Seta traseira Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item52"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Seta traseira Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item52"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item53">Seta traseira Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item53"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Seta traseira Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item53"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item54">Luz de Cortesia Porta Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item54"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de Cortesia Porta Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item54"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item55">Luz de Cortesia Porta Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item55"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de Cortesia Porta Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item55"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item56">Luz de posição Estacionamento dianteira Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item56"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de posição Estacionamento dianteira Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item56"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item57">Luz de posição Estacionamento dianteira Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item57"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de posição Estacionamento dianteira Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item57"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item58">Luz de posição Estacionamento Traseira Lado Motorista (L/E)</label> <div class="emoji-rating" data-item="item58"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de posição Estacionamento Traseira Lado Motorista (L/E)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item58"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item59">Luz de posição Estacionamento Traseira Lado Passageiro (L/D)</label> <div class="emoji-rating" data-item="item59"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de posição Estacionamento Traseira Lado Passageiro (L/D)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item59"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item60">Pisca Alerta Luzes e Botão ∆</label> <div class="emoji-rating" data-item="item60"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Pisca Alerta Luzes e Botão ∆', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item60"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de COMPONENTES EXTERNOS --> <div class="checklist-section"> <h3>COMPONENTES EXTERNOS</h3> <div class="checklist-item"> <label for="item61">Retrovisor externo Lado Motorista (L/E) - ajuste e aquecimento</label> <div class="emoji-rating" data-item="item61"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Retrovisor externo Lado Motorista (L/E) - ajuste e aquecimento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item61"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item62">Retrovisor externo Lado Passageiro (L/D) - ajuste e aquecimento</label> <div class="emoji-rating" data-item="item62"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Retrovisor externo Lado Passageiro (L/D) - ajuste e aquecimento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item62"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item63">Maçanetas externas (todas as portas)</label> <div class="emoji-rating" data-item="item63"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Maçanetas externas (todas as portas)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item63"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item64">Barras de teto (fixação, estado)</label> <div class="emoji-rating" data-item="item64"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Barras de teto (fixação, estado)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item64"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item65">Antena (existência, estado)</label> <div class="emoji-rating" data-item="item65"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Antena (existência, estado)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item65"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item66">Espoiler (fixação, estado)</label> <div class="emoji-rating" data-item="item66"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Espoiler (fixação, estado)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item66"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item67">Grade dianteira (estado, emblemas)</label> <div class="emoji-rating" data-item="item67"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Grade dianteira (estado, emblemas)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item67"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item68">Frisos e molduras decorativas</label> <div class="emoji-rating" data-item="item68"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Frisos e molduras decorativas', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item68"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item69">Tampa do tanque de combustível</label> <div class="emoji-rating" data-item="item69"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Tampa do tanque de combustível', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item69"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de INTERIOR DO VEÍCULO BANCOS ACESSÓRIOS --> <div class="checklist-section"> <h3>INTERIOR DO VEÍCULO BANCOS ACESSÓRIOS</h3> <div class="checklist-item"> <label for="item70">Banco Motorista (LE) - regulagem, desgaste, funcionamento</label> <div class="emoji-rating" data-item="item70"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Banco Motorista (LE) - regulagem, desgaste, funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item70"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item71">Banco Passageiro (LD) - regulagem, desgaste, funcionamento</label> <div class="emoji-rating" data-item="item71"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Banco Passageiro (LD) - regulagem, desgaste, funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item71"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item72">Banco traseiro Motorista (LE)</label> <div class="emoji-rating" data-item="item72"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Banco traseiro Motorista (LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item72"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item73">Banco traseiro Passageiro (LD)</label> <div class="emoji-rating" data-item="item73"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Banco traseiro Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item73"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item74">Banco traseiro central</label> <div class="emoji-rating" data-item="item74"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Banco traseiro central', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item74"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item75">Encosto de cabeça dianteiro Motorista (LE)</label> <div class="emoji-rating" data-item="item75"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Encosto de cabeça dianteiro Motorista (LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item75"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item76">Encosto de cabeça dianteiro Passageiro (LD)</label> <div class="emoji-rating" data-item="item76"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Encosto de cabeça dianteiro Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item76"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item77">Encosto de cabeça traseiro Motorista (LE)</label> <div class="emoji-rating" data-item="item77"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Encosto de cabeça traseiro Motorista (LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item77"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item78">Encosto de cabeça traseiro Passageiro (LD)</label> <div class="emoji-rating" data-item="item78"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Encosto de cabeça traseiro Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item78"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item79">Cintos de segurança dianteiros (LE e LD)</label> <div class="emoji-rating" data-item="item79"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Cintos de segurança dianteiros (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item79"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item80">Cintos de segurança traseiros (LE, LD e central)</label> <div class="emoji-rating" data-item="item80"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Cintos de segurança traseiros (LE, LD e central)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item80"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item81">Regulagem elétrica dos bancos (se existir)</label> <div class="emoji-rating" data-item="item81"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Regulagem elétrica dos bancos (se existir)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item81"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item82">Aquecedor/ventilação dos bancos</label> <div class="emoji-rating" data-item="item82"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Aquecedor/ventilação dos bancos', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item82"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item83">Apoios de braço (dianteiros e traseiros)</label> <div class="emoji-rating" data-item="item83"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Apoios de braço (dianteiros e traseiros)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item83"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de PAINEL E CONTROLES --> <div class="checklist-section"> <h3>PAINEL E CONTROLES</h3> <div class="checklist-item"> <label for="item84">Painel de instrumentos (luzes, indicadores)</label> <div class="emoji-rating" data-item="item84"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Painel de instrumentos (luzes, indicadores)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item84"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item85">Volante (desgaste, comandos, ajuste)</label> <div class="emoji-rating" data-item="item85"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Volante (desgaste, comandos, ajuste)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item85"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item86">Alavanca de câmbio (funcionamento, desgaste)</label> <div class="emoji-rating" data-item="item86"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Alavanca de câmbio (funcionamento, desgaste)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item86"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item87">Pedal de freio (curso, resistência)</label> <div class="emoji-rating" data-item="item87"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Pedal de freio (curso, resistência)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item87"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item88">Pedal de acelerador (resposta, curso)</label> <div class="emoji-rating" data-item="item88"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Pedal de acelerador (resposta, curso)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item88"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item89">Pedal de embreagem (curso, ponto) - se aplicável</label> <div class="emoji-rating" data-item="item89"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Pedal de embreagem (curso, ponto) - se aplicável', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item89"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item90">Tela multimídia (funcionamento, toque)</label> <div class="emoji-rating" data-item="item90"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Tela multimídia (funcionamento, toque)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item90"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item91">Controles no volante (funcionamento)</label> <div class="emoji-rating" data-item="item91"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Controles no volante (funcionamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item91"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item92">Comandos no painel central</label> <div class="emoji-rating" data-item="item92"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Comandos no painel central', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item92"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item93">Porta-luvas Passageiro (LD) - funcionamento</label> <div class="emoji-rating" data-item="item93"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Porta-luvas Passageiro (LD) - funcionamento', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item93"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item94">Porta-copos e porta-objetos</label> <div class="emoji-rating" data-item="item94"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Porta-copos e porta-objetos', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item94"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item95">Tomadas 12V/USB (funcionamento)</label> <div class="emoji-rating" data-item="item95"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Tomadas 12V/USB (funcionamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item95"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de SISTEMA DE CLIMATIZAÇÃO --> <div class="checklist-section"> <h3>SISTEMA DE CLIMATIZAÇÃO</h3> <div class="checklist-item"> <label for="item96">Ar-condicionado (funcionamento, refrigeração)</label> <div class="emoji-rating" data-item="item96"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Ar-condicionado (funcionamento, refrigeração)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item96"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item97">Controle de temperatura Motorista (LE)</label> <div class="emoji-rating" data-item="item97"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Controle de temperatura Motorista (LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item97"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item98">Controle de temperatura Passageiro (LD)</label> <div class="emoji-rating" data-item="item98"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Controle de temperatura Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item98"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item99">Saídas de ar dianteiras (LE e LD)</label> <div class="emoji-rating" data-item="item99"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Saídas de ar dianteiras (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item99"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item100">Saídas de ar traseiras (se existir)</label> <div class="emoji-rating" data-item="item100"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Saídas de ar traseiras (se existir)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item100"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item101">Desembaçador dianteiro</label> <div class="emoji-rating" data-item="item101"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Desembaçador dianteiro', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item101"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item102">Desembaçador traseiro</label> <div class="emoji-rating" data-item="item102"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Desembaçador traseiro', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item102"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item103">Aquecimento dos bancos</label> <div class="emoji-rating" data-item="item103"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Aquecimento dos bancos', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item103"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item104">Odores anormais no sistema</label> <div class="emoji-rating" data-item="item104"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Odores anormais no sistema', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item104"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item105">Filtro de cabine (estado)</label> <div class="emoji-rating" data-item="item105"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de cabine (estado)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item105"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de INSPEÇÃO MECÂNICA MOTOR E COMPONENTES --> <div class="checklist-section"> <h3>INSPEÇÃO MECÂNICA MOTOR E COMPONENTES</h3> <div class="checklist-item"> <label for="item106">Vazamento de óleo (lado Motorista - LE)</label> <div class="emoji-rating" data-item="item106"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vazamento de óleo (lado Motorista - LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item106"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item107">Vazamento de óleo (lado Passageiro - LD)</label> <div class="emoji-rating" data-item="item107"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vazamento de óleo (lado Passageiro - LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item107"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item108">Nível e estado do óleo do motor</label> <div class="emoji-rating" data-item="item108"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Nível e estado do óleo do motor', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item108"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item109">Correias de acessórios (estado, tensão)</label> <div class="emoji-rating" data-item="item109"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Correias de acessórios (estado, tensão)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item109"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item110">Polias (folgas, ruídos, alinhamento)</label> <div class="emoji-rating" data-item="item110"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Polias (folgas, ruídos, alinhamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item110"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item111">Junta do cabeçote (vazamentos)</label> <div class="emoji-rating" data-item="item111"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Junta do cabeçote (vazamentos)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item111"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item112">Suporte motor Motorista (LE)</label> <div class="emoji-rating" data-item="item112"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Suporte motor Motorista (LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item112"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item113">Suporte motor Passageiro (LD)</label> <div class="emoji-rating" data-item="item113"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Suporte motor Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item113"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item114">Filtro de ar (estado, fixação)</label> <div class="emoji-rating" data-item="item114"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de ar (estado, fixação)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item114"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item115">Filtro de combustível</label> <div class="emoji-rating" data-item="item115"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de combustível', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item115"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item116">Bateria (fixação, corrosão, carga)</label> <div class="emoji-rating" data-item="item116"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Bateria (fixação, corrosão, carga)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item116"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item117">Alternador (teste de carga)</label> <div class="emoji-rating" data-item="item117"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Alternador (teste de carga)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item117"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item118">Motor de partida (funcionamento)</label> <div class="emoji-rating" data-item="item118"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Motor de partida (funcionamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item118"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item119">Sistema de injeção (vazamentos, ruídos)</label> <div class="emoji-rating" data-item="item119"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Sistema de injeção (vazamentos, ruídos)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item119"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item120">Coletor de admissão/escape</label> <div class="emoji-rating" data-item="item120"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Coletor de admissão/escape', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item120"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de SISTEMA DE FREIO --> <div class="checklist-section"> <h3>SISTEMA DE FREIO</h3> <div class="checklist-item"> <label for="item121">Pastilhas de freio dianteiras (LE e LD)</label> <div class="emoji-rating" data-item="item121"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Pastilhas de freio dianteiras (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item121"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item122">Discos de freio dianteiros (LE e LD)</label> <div class="emoji-rating" data-item="item122"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Discos de freio dianteiros (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item122"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item123">Lonas/tambores traseiros (LE e LD)</label> <div class="emoji-rating" data-item="item123"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Lonas/tambores traseiros (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item123"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item124">Cilindro de roda traseiro (LE e LD)</label> <div class="emoji-rating" data-item="item124"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Cilindro de roda traseiro (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item124"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item125">Mangueiras de freio (fissuras, vazamentos)</label> <div class="emoji-rating" data-item="item125"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Mangueiras de freio (fissuras, vazamentos)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item125"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item126">Nível do fluido de freio</label> <div class="emoji-rating" data-item="item126"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Nível do fluido de freio', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item126"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item127">Funcionamento do ABS (teste)</label> <div class="emoji-rating" data-item="item127"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Funcionamento do ABS (teste)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item127"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item128">Freio de estacionamento (ajuste, funcionamento)</label> <div class="emoji-rating" data-item="item128"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Freio de estacionamento (ajuste, funcionamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item128"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item129">Sensor ABS (existência, estado)</label> <div class="emoji-rating" data-item="item129"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Sensor ABS (existência, estado)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item129"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item130">Proporcionador de frenagem</label> <div class="emoji-rating" data-item="item130"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Proporcionador de frenagem', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item130"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de SUSPENSÃO E DIREÇÃO --> <div class="checklist-section"> <h3>SUSPENSÃO E DIREÇÃO</h3> <div class="checklist-item"> <label for="item131">Amortecedor dianteiro Motorista (LE)</label> <div class="emoji-rating" data-item="item131"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amortecedor dianteiro Motorista (LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item131"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item132">Amortecedor dianteiro Passageiro (LD)</label> <div class="emoji-rating" data-item="item132"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amortecedor dianteiro Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item132"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item133">Mola dianteira (LE e LD)</label> <div class="emoji-rating" data-item="item133"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Mola dianteira (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item133"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item134">Bandeja dianteira (LE e LD)</label> <div class="emoji-rating" data-item="item134"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Bandeja dianteira (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item134"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item135">Terminal de direção (LE e LD)</label> <div class="emoji-rating" data-item="item135"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Terminal de direção (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item135"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item136">Barra estabilizadora (buchas, suportes)</label> <div class="emoji-rating" data-item="item136"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Barra estabilizadora (buchas, suportes)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item136"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item137">Amortecedor traseiro Motorista (LE)</label> <div class="emoji-rating" data-item="item137"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amortecedor traseiro Motorista (LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item137"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item138">Amortecedor traseiro Passageiro (LD)</label> <div class="emoji-rating" data-item="item138"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Amortecedor traseiro Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item138"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item139">Mola traseira (LE e LD)</label> <div class="emoji-rating" data-item="item139"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Mola traseira (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item139"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item140">Bandeja traseira (LE e LD)</label> <div class="emoji-rating" data-item="item140"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Bandeja traseira (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item140"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item141">Alinhamento da direção (teste)</label> <div class="emoji-rating" data-item="item141"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Alinhamento da direção (teste)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item141"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item142">Folga no volante</label> <div class="emoji-rating" data-item="item142"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Folga no volante', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item142"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item143">Caixa de direção (vazamentos, ruídos)</label> <div class="emoji-rating" data-item="item143"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Caixa de direção (vazamentos, ruídos)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item143"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item144">Bomba de direção hidráulica (se existir)</label> <div class="emoji-rating" data-item="item144"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Bomba de direção hidráulica (se existir)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item144"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item145">Fluido de direção (nível, estado)</label> <div class="emoji-rating" data-item="item145"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Fluido de direção (nível, estado)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item145"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de TRANSMISSÃO E DIFERENCIAL --> <div class="checklist-section"> <h3>TRANSMISSÃO E DIFERENCIAL</h3> <div class="checklist-item"> <label for="item146">Vazamentos no câmbio (visual)</label> <div class="emoji-rating" data-item="item146"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vazamentos no câmbio (visual)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item146"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item147">Nível do óleo da transmissão</label> <div class="emoji-rating" data-item="item147"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Nível do óleo da transmissão', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item147"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item148">Coxins de apoio do câmbio</label> <div class="emoji-rating" data-item="item148"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Coxins de apoio do câmbio', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item148"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item149">Funcionamento da embreagem (se aplicável)</label> <div class="emoji-rating" data-item="item149"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Funcionamento da embreagem (se aplicável)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item149"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item150">Ruídos na transmissão</label> <div class="emoji-rating" data-item="item150"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Ruídos na transmissão', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item150"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item151">Engate das marchas (suavidade)</label> <div class="emoji-rating" data-item="item151"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Engate das marchas (suavidade)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item151"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item152">Diferencial (vazamentos, ruídos)</label> <div class="emoji-rating" data-item="item152"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Diferencial (vazamentos, ruídos)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item152"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item153">Nível do óleo do diferencial</label> <div class="emoji-rating" data-item="item153"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Nível do óleo do diferencial', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item153"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item154">Palhetas da transmissão automática</label> <div class="emoji-rating" data-item="item154"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Palhetas da transmissão automática', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item154"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de SISTEMA ELÉTRICO ILUMINAÇÃO INTERNA --> <div class="checklist-section"> <h3>SISTEMA ELÉTRICO ILUMINAÇÃO INTERNA</h3> <div class="checklist-item"> <label for="item155">Luz interna do teto (funcionamento)</label> <div class="emoji-rating" data-item="item155"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz interna do teto (funcionamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item155"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item156">Luz de cortesia Motorista (LE)</label> <div class="emoji-rating" data-item="item156"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de cortesia Motorista (LE)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item156"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item157">Luz de cortesia Passageiro (LD)</label> <div class="emoji-rating" data-item="item157"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz de cortesia Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item157"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item158">Luz do porta-luvas Passageiro (LD)</label> <div class="emoji-rating" data-item="item158"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz do porta-luvas Passageiro (LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item158"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item159">Luz do painel (intensidade)</label> <div class="emoji-rating" data-item="item159"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz do painel (intensidade)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item159"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item160">Luz da mala (Traseira)</label> <div class="emoji-rating" data-item="item160"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luz da mala (Traseira)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item160"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item161">Luzes de porta (todas)</label> <div class="emoji-rating" data-item="item161"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Luzes de porta (todas)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item161"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item162">Iluminação dos controles</label> <div class="emoji-rating" data-item="item162"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Iluminação dos controles', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item162"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de ACESSÓRIOS ELÉTRICOS --> <div class="checklist-section"> <h3>ACESSÓRIOS ELÉTRICOS</h3> <div class="checklist-item"> <label for="item163">Vidros elétricos dianteiros (LE e LD)</label> <div class="emoji-rating" data-item="item163"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vidros elétricos dianteiros (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item163"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item164">Vidros elétricos traseiros (LE e LD)</label> <div class="emoji-rating" data-item="item164"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Vidros elétricos traseiros (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item164"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item165">Travas elétricas (todas as portas)</label> <div class="emoji-rating" data-item="item165"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Travas elétricas (todas as portas)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item165"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item166">Retrovisores elétricos (LE e LD)</label> <div class="emoji-rating" data-item="item166"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Retrovisores elétricos (LE e LD)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item166"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item167">Desembaçador traseiro</label> <div class="emoji-rating" data-item="item167"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Desembaçador traseiro', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item167"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item168">Limpador de para-brisa (velocidades, repouso)</label> <div class="emoji-rating" data-item="item168"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Limpador de para-brisa (velocidades, repouso)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item168"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item169">Lavador de para-brisa (funcionamento, jatos)</label> <div class="emoji-rating" data-item="item169"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Lavador de para-brisa (funcionamento, jatos)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item169"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item170">Limpador/lavador traseiro (se existir)</label> <div class="emoji-rating" data-item="item170"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Limpador/lavador traseiro (se existir)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item170"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item171">Buzina (funcionamento)</label> <div class="emoji-rating" data-item="item171"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Buzina (funcionamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item171"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item172">Alarme (funcionamento)</label> <div class="emoji-rating" data-item="item172"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Alarme (funcionamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item172"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item173">Sistema de som (alto-falantes, antena)</label> <div class="emoji-rating" data-item="item173"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Sistema de som (alto-falantes, antena)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item173"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item174">Carregador sem fio (se existir)</label> <div class="emoji-rating" data-item="item174"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Carregador sem fio (se existir)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item174"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de DIAGNÓSTICO ELETRÔNICO --> <div class="checklist-section"> <h3>DIAGNÓSTICO ELETRÔNICO</h3> <div class="checklist-item"> <label for="item175">Leitura de códigos de falha (scanner)</label> <div class="emoji-rating" data-item="item175"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Leitura de códigos de falha (scanner)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item175"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item176">Teste dos módulos eletrônicos</label> <div class="emoji-rating" data-item="item176"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Teste dos módulos eletrônicos', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item176"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item177">Verificação dos sensores principais</label> <div class="emoji-rating" data-item="item177"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Verificação dos sensores principais', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item177"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item178">Teste do sistema de imobilizador</label> <div class="emoji-rating" data-item="item178"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Teste do sistema de imobilizador', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item178"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item179">Verificação do sistema de airbag</label> <div class="emoji-rating" data-item="item179"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Verificação do sistema de airbag', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item179"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item180">Teste do sistema de controle de tração</label> <div class="emoji-rating" data-item="item180"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Teste do sistema de controle de tração', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item180"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item181">Verificação do sistema de estacionamento assistido</label> <div class="emoji-rating" data-item="item181"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Verificação do sistema de estacionamento assistido', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item181"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item182">Teste do sistema multimídia</label> <div class="emoji-rating" data-item="item182"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Teste do sistema multimídia', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item182"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de DOCUMENTOS E ITENS DE SEGURANÇA --> <div class="checklist-section"> <h3>DOCUMENTOS E ITENS DE SEGURANÇA</h3> <div class="checklist-item"> <label for="item183">CRLV (documento do veículo)</label> <div class="emoji-rating" data-item="item183"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('CRLV (documento do veículo)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item183"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item184">Manual do proprietário</label> <div class="emoji-rating" data-item="item184"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Manual do proprietário', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item184"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item185">Chaves reserva (funcionamento)</label> <div class="emoji-rating" data-item="item185"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Chaves reserva (funcionamento)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item185"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item186">Extintor (validade, pressão, fixação)</label> <div class="emoji-rating" data-item="item186"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Extintor (validade, pressão, fixação)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item186"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item187">Triângulo de segurança (existência)</label> <div class="emoji-rating" data-item="item187"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Triângulo de segurança (existência)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item187"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item188">Macaco e chave de roda (existência)</label> <div class="emoji-rating" data-item="item188"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Macaco e chave de roda (existência)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item188"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item189">Estepe (existência, pressão, estado)</label> <div class="emoji-rating" data-item="item189"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Estepe (existência, pressão, estado)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item189"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item190">Kit de primeiros socorros</label> <div class="emoji-rating" data-item="item190"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Kit de primeiros socorros', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item190"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item191">Controle de alarme/rastreador</label> <div class="emoji-rating" data-item="item191"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Controle de alarme/rastreador', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item191"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item192">Documentos de revisões anteriores</label> <div class="emoji-rating" data-item="item192"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Documentos de revisões anteriores', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item192"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item193">Garantias de componentes</label> <div class="emoji-rating" data-item="item193"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Garantias de componentes', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item193"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item194">Etiqueta de próxima revisão</label> <div class="emoji-rating" data-item="item194"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Etiqueta de próxima revisão', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item194"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de LUBRIFICANTES FLUIDOS --> <div class="checklist-section"> <h3>LUBRIFICANTES FLUIDOS</h3> <div class="checklist-item"> <label for="item195">Óleo do motor</label> <div class="emoji-rating" data-item="item195"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Óleo do motor', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item195"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item196">Óleo da transmissão manual</label> <div class="emoji-rating" data-item="item196"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Óleo da transmissão manual', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item196"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item197">Óleo da transmissão automática</label> <div class="emoji-rating" data-item="item197"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Óleo da transmissão automática', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item197"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item198">Óleo da transmissão CVT</label> <div class="emoji-rating" data-item="item198"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Óleo da transmissão CVT', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item198"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item199">Óleo do diferencial</label> <div class="emoji-rating" data-item="item199"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Óleo do diferencial', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item199"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item200">Óleo da caixa de transferência</label> <div class="emoji-rating" data-item="item200"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Óleo da caixa de transferência', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item200"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item201">Óleo do cubo de roda</label> <div class="emoji-rating" data-item="item201"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Óleo do cubo de roda', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item201"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item202">Fluido de freio</label> <div class="emoji-rating" data-item="item202"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Fluido de freio', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item202"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item203">Fluido de embreagem</label> <div class="emoji-rating" data-item="item203"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Fluido de embreagem', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item203"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item204">Fluido da direção hidráulica</label> <div class="emoji-rating" data-item="item204"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Fluido da direção hidráulica', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item204"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item205">Fluido da direção elétrica (casos com reservatório)</label> <div class="emoji-rating" data-item="item205"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Fluido da direção elétrica (casos com reservatório)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item205"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item206">Fluido de arrefecimento (aditivo do radiador)</label> <div class="emoji-rating" data-item="item206"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Fluido de arrefecimento (aditivo do radiador)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item206"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item207">Fluido do limpador de para-brisa</label> <div class="emoji-rating" data-item="item207"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Fluido do limpador de para-brisa', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item207"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item208">Graxa para rolamentos</label> <div class="emoji-rating" data-item="item208"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Graxa para rolamentos', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item208"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item209">Graxa para homocinética</label> <div class="emoji-rating" data-item="item209"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Graxa para homocinética', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item209"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item210">Graxa para suspensão e pinos</label> <div class="emoji-rating" data-item="item210"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Graxa para suspensão e pinos', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item210"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item211">Graxa para terminais de direção</label> <div class="emoji-rating" data-item="item211"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Graxa para terminais de direção', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item211"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item212">Lubrificante de cabos</label> <div class="emoji-rating" data-item="item212"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Lubrificante de cabos', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item212"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de FILTROS --> <div class="checklist-section"> <h3>FILTROS</h3> <div class="checklist-item"> <label for="item213">Filtro de óleo do motor</label> <div class="emoji-rating" data-item="item213"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de óleo do motor', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item213"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item214">Filtro de ar do motor</label> <div class="emoji-rating" data-item="item214"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de ar do motor', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item214"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item215">Filtro de combustível</label> <div class="emoji-rating" data-item="item215"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de combustível', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item215"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item216">Filtro de combustível separador de água (diesel)</label> <div class="emoji-rating" data-item="item216"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de combustível separador de água (diesel)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item216"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item217">Filtro do ar-condicionado (cabin filter)</label> <div class="emoji-rating" data-item="item217"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro do ar-condicionado (cabin filter)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item217"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item218">Filtro do câmbio automático</label> <div class="emoji-rating" data-item="item218"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro do câmbio automático', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item218"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item219">Filtro de óleo da direção hidráulica</label> <div class="emoji-rating" data-item="item219"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de óleo da direção hidráulica', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item219"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item220">Filtro do respiro do cárter (ou filtro de ventilação do motor)</label> <div class="emoji-rating" data-item="item220"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro do respiro do cárter (ou filtro de ventilação do motor)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item220"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item221">Filtro de óleo da transmissão CVT</label> <div class="emoji-rating" data-item="item221"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de óleo da transmissão CVT', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item221"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item222">Filtro da caixa de transferência (em alguns modelos 4x4)</label> <div class="emoji-rating" data-item="item222"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro da caixa de transferência (em alguns modelos 4x4)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item222"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item223">Tela filtrante da bomba de combustível</label> <div class="emoji-rating" data-item="item223"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Tela filtrante da bomba de combustível', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item223"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item224">Filtro de óleo do diferencial (em alguns modelos)</label> <div class="emoji-rating" data-item="item224"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Filtro de óleo do diferencial (em alguns modelos)', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item224"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> <!-- Seção de RECLAMAÇÕES INICIAIS INFORMAÇÕES ADICIONAIS --> <div class="checklist-section"> <h3>RECLAMAÇÕES INICIAIS INFORMAÇÕES ADICIONAIS</h3> <div class="checklist-item"> <label for="item225">Observação Reclamação1️⃣</label> <div class="emoji-rating" data-item="item225"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação1️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item225"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item226">Observação Reclamação2️⃣</label> <div class="emoji-rating" data-item="item226"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação2️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item226"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item227">Observação Reclamação3️⃣</label> <div class="emoji-rating" data-item="item227"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação3️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item227"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item228">Observação Reclamação4️⃣</label> <div class="emoji-rating" data-item="item228"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação4️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item228"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item229">Observação Reclamação5️⃣</label> <div class="emoji-rating" data-item="item229"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação5️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item229"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item230">Observação Reclamação6️⃣</label> <div class="emoji-rating" data-item="item230"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação6️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item230"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item231">Observação Reclamação7️⃣</label> <div class="emoji-rating" data-item="item231"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação7️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item231"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item232">Observação Reclamação8️⃣</label> <div class="emoji-rating" data-item="item232"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação8️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item232"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item233">Observação Reclamação9️⃣</label> <div class="emoji-rating" data-item="item233"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação9️⃣', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item233"> <textarea placeholder="Adicionar observação..."></textarea> </div> <div class="checklist-item"> <label for="item234">Observação Reclamação🔟</label> <div class="emoji-rating" data-item="item234"> <span data-value="✅" class="">✅</span> <span data-value="❌" class="">❌</span> <span data-value="⚠️" class="">⚠️</span> <span data-value="➖" class="">➖</span> </div> <span class="info-icon" onclick="showPopup('Observação Reclamação🔟', 'Descrição não disponível', '')">ⓘ</span> </div> <div class="observation" id="observation-item234"> <textarea placeholder="Adicionar observação..."></textarea> </div> </div> 
+
+
+
+
+
+
+    <!-- Pop-up de Informações -->
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+      <img id="popup-image" src="" alt="Imagem do item">
+      <p id="popup-text"></p>
+      <button onclick="closePopup()">Fechar</button>
+    </div>
+
+    <!-- Botões principais -->
+    <button onclick="copyChecklist()">Copiar Checklist</button>
+    <button class="whatsapp" onclick="sendWhatsApp('normal')">Enviar no WhatsApp</button>
+    <button class="whatsapp" onclick="sendWhatsApp('business')">Enviar no WhatsApp Business</button>
+    <button class="clear" onclick="clearAllData()">Limpar Tudo</button>
+  </div>
+
+  <script>
+    // Máscara para a placa do veículo
+    const vehiclePlate = document.getElementById('vehiclePlate');
+    vehiclePlate.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\W/g, '').toUpperCase();
+      if (value.length > 3) {
+        value = value.slice(0, 3) + '-' + value.slice(3);
+      }
+      if (value.length > 8) {
+        value = value.slice(0, 8);
+      }
+      e.target.value = value;
+    });
+
+    // Máscara para o telefone
+    const clientPhone = document.getElementById('clientPhone');
+    clientPhone.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 2) {
+        value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+      }
+      if (value.length > 10) {
+        value = `${value.slice(0, 10)}-${value.slice(10, 14)}`;
+      }
+      e.target.value = value;
+    });
+
+    // Variável para controlar o último item selecionado
+    let lastSelectedItem = null;
+
+    // Classificação por emojis
+    const emojiRatings = document.querySelectorAll('.emoji-rating');
+    emojiRatings.forEach(rating => {
+      const emojis = rating.querySelectorAll('span');
+      emojis.forEach(emoji => {
+        emoji.addEventListener('click', () => {
+          const value = emoji.getAttribute('data-value');
+          const item = rating.getAttribute('data-item');
+          const checklistItem = rating.closest('.checklist-item');
+          
+          // Se já está selecionado e clicou novamente, alterna entre expandido/recolhido
+          if (emoji.classList.contains('selected')) {
+            rating.classList.toggle('collapsed');
+            saveToLocalStorage();
+            return;
+          }
+          
+          setEmojiRating(item, value, rating);
+          saveToLocalStorage(); // Salva no Local Storage quando um emoji é clicado
+          
+          // Adiciona efeito de pulso ao emoji selecionado
+          emoji.classList.add('pulse');
+          setTimeout(() => emoji.classList.remove('pulse'), 500);
+          
+          // Recolhe os emojis (mostra apenas o selecionado)
+          rating.classList.add('collapsed');
+          
+          // Remove o destaque do último item selecionado
+          if (lastSelectedItem) {
+            lastSelectedItem.classList.remove('highlighted');
+          }
+          
+          // Destaca o item atual
+          checklistItem.classList.add('highlighted');
+          lastSelectedItem = checklistItem;
+        });
+      });
+    });
+
+    // Função para definir a classificação por emojis
+    function setEmojiRating(item, value, rating) {
+      const emojis = rating.querySelectorAll('span');
+      const selectedEmoji = rating.querySelector('.selected');
+      const checklistItem = rating.closest('.checklist-item');
+
+      if (selectedEmoji && selectedEmoji.getAttribute('data-value') === value) {
+        emojis.forEach(emoji => emoji.style.opacity = '1');
+        selectedEmoji.classList.remove('selected');
+        document.getElementById(`observation-${item}`).style.display = 'none';
+        checklistItem.classList.remove('selected');
+      } else {
+        emojis.forEach(emoji => {
+          if (emoji.getAttribute('data-value') === value) {
+            emoji.classList.add('selected');
+            emoji.style.opacity = '1';
+          } else {
+            emoji.classList.remove('selected');
+            emoji.style.opacity = '0.3';
+          }
+        });
+
+        if (value === '❌' || value === '⚠️') {
+          document.getElementById(`observation-${item}`).style.display = 'block';
+        } else {
+          document.getElementById(`observation-${item}`).style.display = 'none';
+        }
+
+        checklistItem.classList.add('selected');
+      }
+    }
+
+    // Função para salvar todos os dados no Local Storage
+    function saveToLocalStorage() {
+      const formData = {
+        clientName: document.getElementById('clientName').value,
+        clientPhone: document.getElementById('clientPhone').value,
+        montadora: document.getElementById('montadora').value,
+        vehicleModel: document.getElementById('vehicleModel').value,
+        ano: document.getElementById('ano').value,
+        cor: document.getElementById('cor').value,
+        vehiclePlate: document.getElementById('vehiclePlate').value,
+        consultor: document.getElementById('consultor').value,
+        mecanico: document.getElementById('mecanico').value,
+        data: document.getElementById('data').value,
+        combustivel: document.getElementById('combustivel').value,
+        quilometragem: document.getElementById('quilometragem').value
+      };
+
+      // Salvar seleções de emojis e observações
+      const checklistData = {};
+      document.querySelectorAll('.checklist-item').forEach(item => {
+        const itemId = item.querySelector('.emoji-rating').getAttribute('data-item');
+        const selectedEmoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '';
+        const observation = document.getElementById(`observation-${itemId}`)?.querySelector('textarea').value || '';
+        const isCollapsed = item.querySelector('.emoji-rating').classList.contains('collapsed');
+        
+        checklistData[itemId] = {
+          emoji: selectedEmoji,
+          observation: observation,
+          collapsed: isCollapsed
+        };
+      });
+
+      // Armazenar no Local Storage
+      localStorage.setItem('checklistFormData', JSON.stringify(formData));
+      localStorage.setItem('checklistItemsData', JSON.stringify(checklistData));
+    }
+
+    // Função para carregar dados do Local Storage
+    function loadFromLocalStorage() {
+      const formData = JSON.parse(localStorage.getItem('checklistFormData'));
+      const checklistData = JSON.parse(localStorage.getItem('checklistItemsData'));
+
+      if (formData) {
+        // Preencher formulário
+        document.getElementById('clientName').value = formData.clientName || '';
+        document.getElementById('clientPhone').value = formData.clientPhone || '';
+        document.getElementById('montadora').value = formData.montadora || '';
+        document.getElementById('vehicleModel').value = formData.vehicleModel || '';
+        document.getElementById('ano').value = formData.ano || 'Selecionar o Ano';
+        document.getElementById('cor').value = formData.cor || 'Selecionar a Cor';
+        document.getElementById('vehiclePlate').value = formData.vehiclePlate || '';
+        document.getElementById('consultor').value = formData.consultor || '';
+        document.getElementById('mecanico').value = formData.mecanico || '';
+        document.getElementById('data').value = formData.data || '';
+        document.getElementById('combustivel').value = formData.combustivel || 'Quantidade de Combustível';
+        document.getElementById('quilometragem').value = formData.quilometragem || '';
+      }
+
+      if (checklistData) {
+        // Preencher checklist
+        for (const itemId in checklistData) {
+          const itemData = checklistData[itemId];
+          if (itemData.emoji) {
+            const ratingDiv = document.querySelector(`.emoji-rating[data-item="${itemId}"]`);
+            const emojis = ratingDiv.querySelectorAll('span');
+            
+            emojis.forEach(emoji => {
+              if (emoji.getAttribute('data-value') === itemData.emoji) {
+                emoji.classList.add('selected');
+                emoji.style.opacity = '1';
+              } else {
+                emoji.classList.remove('selected');
+                emoji.style.opacity = '0.3';
+              }
+            });
+
+            if (itemData.emoji === '❌' || itemData.emoji === '⚠️') {
+              document.getElementById(`observation-${itemId}`).style.display = 'block';
+            }
+
+            if (itemData.observation) {
+              document.getElementById(`observation-${itemId}`).querySelector('textarea').value = itemData.observation;
+            }
+
+            ratingDiv.closest('.checklist-item').classList.add('selected');
+            
+            // Restaurar estado collapsed/expanded
+            if (itemData.collapsed) {
+              ratingDiv.classList.add('collapsed');
+            } else {
+              ratingDiv.classList.remove('collapsed');
+            }
+          }
+        }
+      }
+    }
+
+    // Função para limpar todos os dados
+    function clearAllData() {
+      if (confirm('Tem certeza que deseja limpar todos os dados? Isso não pode ser desfeito.')) {
+        // Limpar formulário
+        document.getElementById('clientForm').reset();
+        
+        // Limpar seleções de emojis
+        document.querySelectorAll('.emoji-rating span').forEach(emoji => {
+          emoji.classList.remove('selected');
+          emoji.style.opacity = '1';
+        });
+        
+        // Limpar observações
+        document.querySelectorAll('.observation textarea').forEach(textarea => {
+          textarea.value = '';
+        });
+        
+        // Esconder todas as observações
+        document.querySelectorAll('.observation').forEach(obs => {
+          obs.style.display = 'none';
+        });
+        
+        // Remover classe selected dos itens
+        document.querySelectorAll('.checklist-item').forEach(item => {
+          item.classList.remove('selected');
+          item.classList.remove('highlighted');
+        });
+        
+        // Resetar emojis para estado expandido
+        document.querySelectorAll('.emoji-rating').forEach(rating => {
+          rating.classList.remove('collapsed');
+        });
+        
+        // Limpar Local Storage
+        localStorage.removeItem('checklistFormData');
+        localStorage.removeItem('checklistItemsData');
+        
+        // Resetar o último item selecionado
+        lastSelectedItem = null;
+        
+        alert('Todos os dados foram limpos com sucesso!');
+      }
+    }
+
+    // Adicionar event listeners para salvar quando os campos são alterados
+    document.querySelectorAll('#clientForm input, #clientForm select, #clientForm textarea').forEach(element => {
+      element.addEventListener('input', saveToLocalStorage);
+      element.addEventListener('change', saveToLocalStorage);
+    });
+
+    // Adicionar event listeners para observações
+    document.querySelectorAll('.observation textarea').forEach(textarea => {
+      textarea.addEventListener('input', saveToLocalStorage);
+    });
+
+    // Carregar dados quando a página é carregada
+    window.addEventListener('load', () => {
+      loadFromLocalStorage();
+    });
+
+    // Função para copiar os dados
+    function copyChecklist() {
+      const clientName = document.getElementById('clientName').value;
+      const vehicleModel = document.getElementById('vehicleModel').value;
+      const vehiclePlate = document.getElementById('vehiclePlate').value;
+      const clientPhone = document.getElementById('clientPhone').value;
+      const montadora = document.getElementById('montadora').value;
+      const consultor = document.getElementById('consultor').value;
+      const mecanico = document.getElementById('mecanico').value;
+      const data = document.getElementById('data').value;
+      const combustivel = document.getElementById('combustivel').value;
+      const quilometragem = document.getElementById('quilometragem').value;
+      const cor = document.getElementById('cor').value;
+      const ano = document.getElementById('ano').value;
+
+      const checklistItems = [];
+      document.querySelectorAll('.checklist-item').forEach(item => {
+        const section = item.closest('.checklist-section').querySelector('h3').innerText.toUpperCase();
+        const label = item.querySelector('label').innerText;
+        const emoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '➖';
+        const observation = document.getElementById(`observation-${item.querySelector('.emoji-rating').getAttribute('data-item')}`)?.querySelector('textarea').value || '';
+        
+        if (emoji !== '➖') {
+          checklistItems.push({ section, label, emoji, observation });
+        }
+      });
+
+      const sortedItems = checklistItems.sort((a, b) => {
+        const order = { '❌': 1, '⚠️': 2, '✅': 3 };
+        return order[a.emoji] - order[b.emoji];
+      });
+
+      const dataText = `
+CLIENTE      : ${clientName}
+TELEFONE     : ${clientPhone}
+MONTADORA    : ${montadora}
+VEÍCULO      : ${vehicleModel}
+PLACA        : ${vehiclePlate}
+DATA         : ${data}
+COR          : ${cor}
+ANO          : ${ano}
+COMBUSTÍVEL  : ${combustivel}
+QUILOMETRAGEM: ${quilometragem}
+CONSULTOR    : ${consultor}
+MECÂNICO     : ${mecanico}
+
+        CHECKLIST:
+        ${sortedItems.map(item => `
+          SEÇÃO: ${item.section}
+          ${item.label}: ${item.emoji}
+          ${item.observation ? `OBSERVAÇÃO: ${item.observation}` : ''}
+        `).join('')}
+      `;
+
+      navigator.clipboard.writeText(dataText.trim())
+        .then(() => alert('Dados copiados para a área de transferência!'))
+        .catch(() => alert('Erro ao copiar os dados.'));
+    }
+
+    function sendWhatsApp(type) {
+      const clientName = document.getElementById('clientName').value;
+      const vehicleModel = document.getElementById('vehicleModel').value;
+      const vehiclePlate = document.getElementById('vehiclePlate').value;
+      const clientPhone = document.getElementById('clientPhone').value.replace(/\D/g, '');
+      const montadora = document.getElementById('montadora').value;
+      const data = document.getElementById('data').value;
+      const combustivel = document.getElementById('combustivel').value;
+      const quilometragem = document.getElementById('quilometragem').value;
+      const cor = document.getElementById('cor').value;
+      const ano = document.getElementById('ano').value;
+      const consultor = document.getElementById('consultor').value;
+      const mecanico = document.getElementById('mecanico').value;
+
+      const checklistItems = [];
+      document.querySelectorAll('.checklist-item').forEach(item => {
+        const section = item.closest('.checklist-section').querySelector('h3').innerText.toUpperCase();
+        const label = item.querySelector('label').innerText;
+        const emoji = item.querySelector('.emoji-rating span.selected')?.getAttribute('data-value') || '➖';
+        const observation = document.getElementById(`observation-${item.querySelector('.emoji-rating').getAttribute('data-item')}`)?.querySelector('textarea').value || '';
+        
+        if (emoji !== '➖') {
+          checklistItems.push({ section, label, emoji, observation });
+        }
+      });
+
+      const sortedItems = checklistItems.sort((a, b) => {
+        const order = { '❌': 1, '⚠️': 2, '✅': 3 };
+        return order[a.emoji] - order[b.emoji];
+      });
+
+      const message = `
+        *NOME DO CLIENTE:* ${clientName}
+        *TELEFONE:* ${clientPhone}
+        *MONTADORA:* ${montadora}
+        *MODELO DO VEÍCULO:* ${vehicleModel}
+        *PLACA DO VEÍCULO:* ${vehiclePlate}
+        *DATA:* ${data}
+        *COMBUSTÍVEL:* ${combustivel}
+        *QUILOMETRAGEM:* ${quilometragem}
+        *COR:* ${cor}
+        *ANO:* ${ano}
+        *CONSULTOR:* ${consultor}
+        *MECÂNICO:* ${mecanico}
+
+        *CHECKLIST:*
+        ${sortedItems.map(item => `
+          *SEÇÃO:* ${item.section}
+          ${item.label}: ${item.emoji}
+          ${item.observation ? `*OBSERVAÇÃO:* ${item.observation}` : ''}
+        `).join('')}
+      `.trim();
+
+      const url = type === 'business' 
+        ? `https://wa.me/55${clientPhone}?text=${encodeURIComponent(message)}&app_absent=1`
+        : `https://wa.me/55${clientPhone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+
+    // Função para exibir o pop-up
+    function showPopup(title, description, imageUrl) {
+      document.getElementById('popup-image').src = imageUrl;
+      document.getElementById('popup-text').innerText = `${title}\n\n${description}`;
+      document.getElementById('popup').style.display = 'block';
+      document.getElementById('overlay').style.display = 'block';
+    }
+
+    // Função para fechar o pop-up
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+    }
+
+    // Função para filtrar itens
+    document.getElementById('filterInput').addEventListener('input', function() {
+      const filter = this.value.toLowerCase();
+      const sections = document.querySelectorAll('.checklist-section');
+      
+      sections.forEach(section => {
+        const sectionTitle = section.querySelector('h3').textContent.toLowerCase();
+        const items = section.querySelectorAll('.checklist-item');
+        let hasVisibleItems = false;
+        
+        items.forEach(item => {
+          const itemText = item.querySelector('label').textContent.toLowerCase();
+          if (itemText.includes(filter) || sectionTitle.includes(filter)) {
+            item.classList.remove('hidden');
+            hasVisibleItems = true;
+          } else {
+            item.classList.add('hidden');
+          }
+        });
+        
+        // Mostrar/ocultar seção com base na visibilidade dos itens
+        if (hasVisibleItems || filter === '') {
+          section.classList.remove('section-hidden');
+          section.classList.add('section-visible');
+        } else {
+          section.classList.add('section-hidden');
+          section.classList.remove('section-visible');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
